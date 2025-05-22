@@ -18,86 +18,101 @@ code: https://github.com/sa4s-serc/HarmonE
 data: https://pems.dot.ca.gov
 ---
 
-<!-- Using HTML to center the abstract -->
-<div class="columns is-centered has-text-centered">
-    <div class="column is-four-fifths">
-        <h2>Abstract</h2>
-        <div class="content has-text-justified">
-Machine Learning Enabled Systems (MLS) are becoming integral to real-world applications, but ensuring their sustainable performance over time remains a significant challenge. These systems operate in dynamic environments and face runtime uncertainties like data drift and model degradation, which affect the sustainability of MLS across multiple dimensions: technical, economical, environmental, and social. While Machine Learning Operations (MLOps) addresses the technical dimension by streamlining the ML model lifecycle, it overlooks other dimensions. Furthermore, some traditional practices, such as frequent retraining, incur substantial energy and computational overhead, thus amplifying sustainability concerns. To address them, we introduce HarmonE, an architectural approach that enables self-adaptive capabilities in MLOps pipelines using the MAPE-K loop. HarmonE allows system architects to define explicit sustainability goals and adaptation thresholds at design time, and performs runtime monitoring of key metrics, such as prediction accuracy, energy consumption, and data distribution shifts, to trigger appropriate adaptation strategies. We validate our approach using a Digital Twin (DT) of an Intelligent Transportation System (ITS), focusing on traffic flow prediction as our primary use case. The DT employs time series ML models to simulate real-time traffic and assess various flow scenarios. Our results show that HarmonE adapts effectively to evolving conditions while maintaining accuracy and meeting sustainability goals. 
-        </div>
-    </div>
-</div>
+## Abstract
+
+<img src="/static/image/Intro.png" alt="Decision Map Illustration" style="max-width: 70%; display: block; margin: 1.5rem auto;">
+
+Machine learning powers much of what we use every day, but keeping the models that these systems use reliable and energy-efficient over time isn’t easy. Models drift, data changes, and retraining too often can drain resources. Retraining models too often wastes energy and resources, while doing too little can hurt performance.
+
+**HarmonE** is our solution: an architectural approach that helps machine learning pipelines adapt on their own. It monitors accuracy, energy use, and data shifts to keep things running smoothly. It only takes action when needed—based on sustainability goals set in advance.
+
+We tested HarmonE on a city’s traffic system using a digital twin. It adapted to new conditions while saving energy and maintaining performance. After all, sustainability isn’t just about quick fixes—it’s about building systems that can maintain their performance over time, even as conditions evolve. 
 
 ---
 
 ## Motivation
-Machine Learning Enabled Systems (MLS) are increasingly vital in diverse applications, yet their long-term sustainability across technical, environmental, economic, and social dimensions is a growing concern. Current MLOps practices often focus on technical aspects like model accuracy, sometimes overlooking other sustainability dimensions. Practices like frequent model retraining, while ensuring accuracy, can lead to significant energy consumption and computational costs, exacerbating environmental and economic concerns. The Green AI movement aims to address these, but a comprehensive, adaptive approach integrated into MLOps is needed.
 
-## Our Approach: HarmonE
-We introduce **HarmonE**, an architectural approach designed to integrate self-adaptive capabilities into MLOps pipelines. HarmonE aims to manage runtime uncertainties and align system behavior with predefined sustainability goals using the MAPE-K (Monitor-Analyze-Plan-Execute over a shared Knowledge base) control loop.
-At its core, HarmonE allows system architects to:
-1.  Define explicit sustainability goals (e.g., energy consumption limits, minimum accuracy) and adaptation thresholds at design time using a **Decision Map**.
-2.  Perform runtime **Monitoring** of key metrics like prediction accuracy, energy usage, and data distribution shifts.
-3.  **Analyze** these metrics against the defined goals and thresholds to detect deviations or potential sustainability violations.
-4.  **Plan** and **Execute** appropriate adaptation strategies, such as switching to a more energy-efficient model, selectively retraining a model, or reusing a previously versioned model.
-HarmonE employs a control-theoretic mechanism that allows dynamic adaptation boundaries to evolve based on the cumulative effect of deviations from a reference level, enabling more deliberate and context-aware responses.
+Today’s MLOps pipelines often focus on performance but overlook long-term sustainability. Frequent retraining maintains accuracy but is resource-intensive.
 
-## Key Features and Components
-HarmonE is structured around three main components: the Managed System, the Managing System, and the Decision Map.
+HarmonE adds awareness and adaptability. It helps models stay efficient and accurate without wasting energy or compute.
 
-1.  **Decision Map (DM):** A design-time artifact where architects visualize sustainability concerns across various dimensions (Social, Environmental, Technical, Economic) and define relationships between system functionalities and these concerns. Adaptation boundaries are set based on these goals.
-2.  **Managed System:** The MLOps pipeline under adaptation, consisting of:
-    *   *Training Subsystem:* For training/retraining models when triggered.
-    *   *Inference Subsystem:* For real-time predictions using the deployed model.
-3.  **Managing System (MAPE-K Loop):**
-    *   *Monitor:* Collects runtime metrics (e.g., R² score, normalized energy, KL divergence for data drift).
-    *   *Analyzer:* Detects uncertainties by comparing monitored metrics against thresholds (e.g., `EMA(Score) < S_min`, `Energy > Dynamic_Threshold_TE`, `Drift > T_drift`). It uses dynamic thresholds for aspects like energy.
-    *   *Planner:* Selects adaptation tactics (e.g., model switching, model retraining, data/model versioning) based on the detected uncertainty and historical performance. Uses strategies like ε-greedy for exploration.
-    *   *Executor:* Enacts the chosen adaptation strategy (e.g., triggers retraining, updates the inference model).
-    *   *Knowledge Base:* Central repository storing:
-        *   Data Repository (sensor data, predictions)
-        *   Sustainability Goals Repository
-        *   Tactics Repository
-        *   Current Model Repository (available models like LR, SVM, LSTM)
-        *   Versioned Model Repository (stores retrained models and their training data distributions)
+---
 
-![HarmonE Architecture](/static/image/HarmonE_Architecture.png)
+## What is HarmonE?
 
-## Experimental Validation & Key Results
-We validated HarmonE using a Digital Twin of an Intelligent Transportation System (ITS) for traffic flow prediction, using the PeMS dataset. We compared HarmonE against several baselines, including individual models (LR, SVM, LSTM) with and without periodic retraining (PRT), and a simpler switching mechanism.
+HarmonE is a self-adaptive MLOps architecture built around the MAPE-K loop:
 
-**Key Findings (RQ answers):**
-*   **RQ1 (Environmental Sustainability):** HarmonE maintains energy consumption below predefined threshold constraints. It consumed **54.5% less energy** than the high-performing LSTM+PRT baseline.
-*   **RQ2 (Accuracy-Energy Trade-off):** HarmonE achieves **95.0% of LSTM+PRT's R² accuracy** while consuming only **45.5% of its energy** and improving inference time by **53.4%**.
-*   **RQ3 (Adaptation Efficiency):** The HarmonE decision-making process (MAPE-K loop) is highly efficient, consuming only **1.3660% of the total system energy**, demonstrating negligible runtime overhead.
+- **Monitor**: Tracks accuracy, energy use, and data changes.
+- **Analyze**: Detects when things drift from expected behavior.
+- **Plan**: Determines the best course of action.
+- **Execute**: Applies the adaptation.
+- **Knowledge**: Stores history and goals to guide decisions.
 
-**Performance Comparison of Different Approaches**
+You define sustainability goals like energy limits or minimum accuracy, and HarmonE helps the system meet them.
+
+---
+
+## Key Components
+
+HarmonE is composed of three main parts:
+
+- **Decision Map**: Sets design-time sustainability goals and constraints.
+
+<img src="/static/image/DM_excali.svg" alt="Decision Map Illustration" style="max-width: 70%; display: block; margin: 1.5rem auto;">
+
+- **Managed System**: The ML pipeline for training and inference.
+- **Managing System**: The MAPE-K loop that drives adaptation.
+
+<img src="/static/image/HarmonE_Architecture.png" alt="HarmonE Architecture" style="max-width: 75%; display: block; margin: 2rem auto;">
+
+
+---
+
+## Evaluation: Traffic Prediction Case Study
+
+We tested HarmonE on a digital twin of a city traffic system using the PeMS dataset. Compared with traditional setups, HarmonE:
+
+- Used 54.5% less energy than retraining-based approaches.
+- Achieved 95% of the best model’s accuracy.
+- Reduced inference time by over 50%.
 
 | Approach      | Energy (mJ) | R² Score | Inference Time (ms) | # Adaptations |
-|---------------|-------------|--------|---------------------|---------------|
-| LR            | 12.1157     | 0.7597 | 0.8306              | -             |
-| LR + PRT      | 12.6987     | 0.7624 | 0.8306              | 4             |
-| SVM           | 14.7649     | 0.7897 | 1.1134              | -             |
-| SVM + PRT     | 16.3304     | 0.8167 | 1.1134              | 4             |
-| LSTM          | 32.9147     | 0.9005 | 3.8475              | -             |
-| LSTM + PRT    | 45.3517     | 0.9085 | 3.8475              | 4             |
-| Switch        | 24.3218     | 0.8445 | 2.2656              | 13            |
-| Switch + PRT  | 25.3176     | 0.8435 | 2.2656              | 17            |
-| **HarmonE**   | **20.6203** | **0.8628** | **1.8887**          | **12**        |
+|---------------|-------------|----------|----------------------|----------------|
+| LR            | 12.12       | 0.7597   | 0.83                 | -              |
+| LR + PRT      | 12.70       | 0.7624   | 0.83                 | 4              |
+| SVM           | 14.76       | 0.7897   | 1.11                 | -              |
+| SVM + PRT     | 16.33       | 0.8167   | 1.11                 | 4              |
+| LSTM          | 32.91       | 0.9005   | 3.85                 | -              |
+| LSTM + PRT    | 45.35       | 0.9085   | 3.85                 | 4              |
+| Switch        | 24.32       | 0.8445   | 2.27                 | 13             |
+| Switch + PRT  | 25.32       | 0.8435   | 2.27                 | 17             |
+| **HarmonE**   | **20.62**   | **0.8628** | **1.89**           | **12**         |
 
-## Significance
-HarmonE presents a novel, self-adaptive architectural approach for building sustainable MLOps pipelines. By explicitly defining and managing sustainability goals across multiple dimensions, HarmonE dynamically balances predictive performance with resource consumption (e.g., energy). It outperforms traditional periodic retraining methods by triggering adaptations only when necessary, significantly reducing resource expenditure and operational overhead while maintaining high accuracy. This work contributes to the growing field of Green AI and sustainable software engineering by providing a practical framework for operationalizing sustainability in complex MLS deployments.
+---
+
+## Why HarmonE Matters
+
+HarmonE proves that machine learning systems can be both effective and sustainable. Instead of retraining on a fixed schedule, it adapts only when needed. This reduces energy use, preserves performance, and supports long-term reliability.
+
+---
 
 ## Citation
 
-```
+```bibtex
 @misc{bhatt2025harmoneselfadaptiveapproacharchitecting,
-      title={HarmonE: A Self-Adaptive Approach to Architecting Sustainable MLOps}, 
-      author={Hiya Bhatt and Shaunak Biswas and Srinivasan Rakhunathan and Karthik Vaidhyanathan},
-      year={2025},
-      eprint={2505.13693},
-      archivePrefix={arXiv},
-      primaryClass={cs.SE},
-      url={https://arxiv.org/abs/2505.13693}, 
+  title={HarmonE: A Self-Adaptive Approach to Architecting Sustainable MLOps},
+  author={Hiya Bhatt and Shaunak Biswas and Srinivasan Rakhunathan and Karthik Vaidhyanathan},
+  year={2025},
+  eprint={2505.13693},
+  archivePrefix={arXiv},
+  primaryClass={cs.SE},
+  url={https://arxiv.org/abs/2505.13693},
 }
 ```
+---
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; padding: 0 5%;">
+  <img src="/static/image/iiit_logo.svg" alt="IIIT Hyderabad" style="height: 150px; max-width: 30%;">
+  <img src="/static/image/sa4s_logo.svg" alt="SA4S Logo" style="height: 150px; max-width: 30%;">
+  <img src="/static/image/serc_logo.svg" alt="SERC Logo" style="height: 150px; max-width: 30%;">
+</div>
+
